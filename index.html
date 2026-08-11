@@ -64,5 +64,53 @@ section{padding:100px 0}.section-head{display:flex;justify-content:space-between
 <footer><div class="wrap foot"><div><strong style="color:#fff">CAT<span class="orange">A</span>LYST CONTRACTORS</strong> — Your Project. Our Priority.</div><div>© <span id="year"></span> Catalyst Contractors • Ashland, Ohio</div></div></footer>
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
+
+const form = document.getElementById('quoteForm');
+const formNote = document.getElementById('formNote');
+
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const button = form.querySelector('button[type="submit"]');
+  const originalText = button.textContent;
+
+  button.disabled = true;
+  button.textContent = 'SENDING...';
+  formNote.textContent = 'Sending your request...';
+
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      form.reset();
+      button.textContent = 'REQUEST SENT ✓';
+
+      formNote.innerHTML =
+        '<strong style="color:#fff;font-size:1.1rem;">THANKS — WE GOT IT.</strong><br>' +
+        'Your project details have been sent to Catalyst Contractors. We’ll be in touch soon.';
+
+      setTimeout(() => {
+        button.disabled = false;
+        button.textContent = originalText;
+      }, 5000);
+
+    } else {
+      throw new Error('Submission failed');
+    }
+
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = originalText;
+    formNote.textContent =
+      'Something went wrong. Please call us at 419-651-1130.';
+  }
+});
 </script>
 </body></html>
